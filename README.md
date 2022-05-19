@@ -10,6 +10,7 @@ Quick guide on how to use this library:
 >>> model = GraphGPR()
 >>> mean, cov = model.fit_and_predict(X,train_ind,ys) # ys correspond to X[train_ind]
 ```
+Note that predictions are made for X inputs that are not marked as ```train_ind```.
 For more detailed explanation check exaple notebooks.
 # Examples
 In section "Experiments" we provide notebooks for regression problems and classification problems.
