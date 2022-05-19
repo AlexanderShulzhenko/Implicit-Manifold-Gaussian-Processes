@@ -1,6 +1,7 @@
 # Graph-Gaussian-Processes-Experiments
 ![Plot](plot.png)
 This repo provides complete model based on Matern Graph Gaussian Processes that are integrated in GPFlow. For all information about Matern Graph Gaussian Processes visit https://github.com/spbu-math-cs/Graph-Gaussian-Processes.
+Model presented in this repo builds K-neighbour graph of inputs and then uses Graph Matern Kernel to build model based on graph Gaussian process.  
 # Installation
 # Library usage
 Quick guide on how to use this library:
