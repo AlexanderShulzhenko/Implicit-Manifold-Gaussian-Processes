@@ -1,4 +1,5 @@
 # Graph-Gaussian-Processes-Experiments
+![Plot](plot.png)
 This repo provides complete model based on Graph Gaussian Processes that are integrated in GPFlow.
 # Installation
 # Library usage
