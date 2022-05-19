@@ -2,7 +2,7 @@
 This repo provides complete model based on Graph Gaussian Processes that are integrated in GPFlow.
 # Installation
 # Library usage
-Quick guide on how to use this library
+Quick guide on how to use this library:
 ```python
 >>> from graph_gaussian_process.graph_gaussian_process_model_regression import GraphGPR
 >>> train_size = 500
@@ -10,5 +10,6 @@ Quick guide on how to use this library
 >>> model = GraphGPR()
 >>> mean, cov = model.fit_and_predict(X,train_ind,ys[train_ind])
 ```
+For more detailed explanation check exaple notebooks.
 # Examples
 In section "Experiments" we provide notebooks for regression problems and classification problems.
