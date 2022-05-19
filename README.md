@@ -8,7 +8,7 @@ Quick guide on how to use this library:
 >>> train_size = 500
 >>> train_ind = np.random.choice(len(X), train_size, replace=False) # X is data inputs
 >>> model = GraphGPR()
->>> mean, cov = model.fit_and_predict(X,train_ind,ys[train_ind])
+>>> mean, cov = model.fit_and_predict(X,train_ind,ys) # ys correspond to X[train_ind]
 ```
 For more detailed explanation check exaple notebooks.
 # Examples
