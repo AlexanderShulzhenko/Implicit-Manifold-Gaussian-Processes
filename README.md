@@ -4,7 +4,7 @@ This repo provides complete model based on Graph Gaussian Processes that are int
 # Library usage
 Quick guide on how to use this library
 ```
-import numpy
+>>>from graph_gaussian_process.graph_gaussian_process_model_regression import GraphGPR
 ```
 # Examples
 In section "Experiments" we provide notebooks for regression problems and classification problems.
