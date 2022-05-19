@@ -1,6 +1,6 @@
 # Graph-Gaussian-Processes-Experiments
 ![Plot](plot.png)
-This repo provides complete model based on Graph Gaussian Processes that are integrated in GPFlow.
+This repo provides complete model based on Matern Graph Gaussian Processes that are integrated in GPFlow. For all information about Matern Graph Gaussian Processes visit https://github.com/spbu-math-cs/Graph-Gaussian-Processes.
 # Installation
 # Library usage
 Quick guide on how to use this library:
