@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[9]:
-
-
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,7 +20,6 @@ gpflow.config.set_default_summary_fmt("notebook")
 tf.get_logger().setLevel('ERROR')
 
 
-# In[11]:
 
 
 class GraphGPC():
