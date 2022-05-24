@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import numpy as np
 import math
 import scipy
@@ -16,9 +10,6 @@ from matplotlib.pyplot import figure
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 
 dtype = tf.float64
-
-
-# In[25]:
 
 
 def plot_harmonic_3D(l,m):
@@ -56,4 +47,3 @@ def plot_harmonic_2D(l,m):
     ax.plot_surface(x, y, z,  rstride=1, cstride=1, facecolors=cm.jet(fcolors))
     ax.set_axis_off()
     plt.show()
-
