@@ -20,8 +20,6 @@ gpflow.config.set_default_summary_fmt("notebook")
 tf.get_logger().setLevel('ERROR')
 
 
-
-
 class GraphGPC():
     def __init__(self,k_neig=40,epsilon=0.2,num_eigenpairs=1000,kappa=5,nu=3/2,sigma_f=1):
         self.k_neig=k_neig
@@ -30,6 +28,7 @@ class GraphGPC():
         self.kappa=kappa
         self.nu=nu
         self.sigma_f=sigma_f
+        self.model=None
 
 
     def build_graph(self,X,k_neig,eps):
@@ -43,7 +42,7 @@ class GraphGPC():
                 G.add_edge(i,neighb_data[1][0][j], weight = np.exp( -d**2/(4*eps**2) ))
         return G
 
-    def fit_and_predict(self, X, train_indices, ys_train, cls_number, train_num=1500 ,full_cov=False):
+    def fit(self, X, train_indices, ys_train, cls_number, train_num=1500):
         ''' Build Graph'''
 
         G = self.build_graph(X,self.k_neig,self.epsilon)
@@ -64,13 +63,10 @@ class GraphGPC():
         ''' Make New ys and train-test split'''
 
         nodes_train = train_indices
-        nodes_test = np.array(list(set(np.arange(len(X))) - set(nodes_train))) #sorted asc
-
+        
         ''' Types '''
         nodes_train = nodes_train.reshape(-1,1)
-        nodes_test = nodes_test.reshape(-1,1)
         nodes_train = tf.convert_to_tensor(nodes_train, dtype=dtype)
-        nodes_test = tf.convert_to_tensor(nodes_test, dtype=dtype)
         
         ys_train = ys_train.reshape(-1,1).astype('float')
 
@@ -119,8 +115,8 @@ class GraphGPC():
                     likelihood = model.elbo(data_train)
                     t.set_postfix({'ELBO': likelihood.numpy()})
 
-            ''' Build model'''
-        model = gpflow.models.SVGP(
+        ''' Build model'''
+        self.model = gpflow.models.SVGP(
                                 kernel=kernel,
                                 likelihood=gpflow.likelihoods.MultiClass(cls_number),
                                 inducing_variable=inducing_points,
@@ -132,11 +128,17 @@ class GraphGPC():
         adam_opt = tf.optimizers.Adam(0.01)
         natgrad_opt = gpflow.optimizers.NaturalGradient(gamma=0.01)
 
-        optimize_SVGP(model, (adam_opt, natgrad_opt), 1000, True)
+        optimize_SVGP(self.model, (adam_opt, natgrad_opt), 1000, True)
 
+    def predict(self, test_indices, full_cov=True):
+        
+        ''' Types '''
+        nodes_test = test_indices
+        nodes_test = nodes_test.reshape(-1,1)
+        nodes_test = tf.convert_to_tensor(nodes_test, dtype=dtype)
+        
         ''' Make predictions'''
-        y_pred_mean, y_pred_var = model.predict_y(nodes_test)
+        y_pred_mean, y_pred_var = self.model.predict_y(nodes_test)
         y_pred = np.argmax(y_pred_mean.numpy(), axis=1).ravel()
 
         return y_pred, y_pred_var
-
