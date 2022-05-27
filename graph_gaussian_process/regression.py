@@ -1,20 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import numpy as np
 import gpflow
 import math
 import scipy
-from scipy.special import sph_harm, lpmv, factorial
 from scipy.special import gamma
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib import cm, colors
-from matplotlib.pyplot import figure
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 from graph_matern.kernels.graph_matern_kernel import GraphMaternKernel
 
 import networkx as nx
@@ -39,6 +27,7 @@ class GraphGPR():
         self.nu=nu
         self.sigma_f=sigma_f
         self.mlv=None
+        self.model=None
 
     def optimize_GPR(self,model, train_steps):
         loss = model.training_loss
@@ -68,7 +57,7 @@ class GraphGPR():
                 G.add_edge(i,neighb_data[1][0][j], weight = np.exp( -d**2/(4*eps**2) ))
         return G
 
-    def fit_and_predict(self, X, train_indices, ys_train, full_cov=False):
+    def fit(self, X, train_indices, ys_train):
         ''' Build Graph'''
 
         G = self.build_graph(X,self.k_neig,self.epsilon)
@@ -89,13 +78,10 @@ class GraphGPR():
         ''' Make New ys and train-test split'''
 
         nodes_train = train_indices
-        nodes_test = np.array(list(set(np.arange(len(X))) - set(nodes_train))) #sorted asc
 
         ''' Types '''
         nodes_train = nodes_train.reshape(-1,1)
-        nodes_test = nodes_test.reshape(-1,1)
         nodes_train = tf.convert_to_tensor(nodes_train, dtype=dtype)
-        nodes_test = tf.convert_to_tensor(nodes_test, dtype=dtype)
 
         ''' Make Model'''
         N = len(G)
@@ -106,14 +92,17 @@ class GraphGPR():
                                   vertex_dim=0, 
                                   point_kernel=None, 
                                   dtype=dtype)
-        model = gpflow.models.GPR(data=(nodes_train, ys_train.reshape(-1,1)), kernel=kernel, noise_variance=0.01)
-        self.optimize_GPR(model, 1000)
+        self.model = gpflow.models.GPR(data=(nodes_train, ys_train.reshape(-1,1)), kernel=kernel, noise_variance=0.01)
+        self.optimize_GPR(self.model, 1000)
 
-        ''' Make Prediction'''
-        mean, cov = model.predict_f(nodes_test, full_cov=full_cov)
-        self.mlv = model.likelihood.variance
-
-        return mean.numpy().ravel(), cov
+        self.mlv = self.model.likelihood.variance
+    
+    def predict(self, test_indices, full_cov=True):
+        nodes_test = test_indices
+        nodes_test = nodes_test.reshape(-1,1)
+        nodes_test = tf.convert_to_tensor(nodes_test, dtype=dtype)
+        mean, cov = self.model.predict_f(nodes_test, full_cov=full_cov)
+        return mean, cov
     
     def LL(self,mean1,cov1, ys_test):
         mean, cov = tf.reshape(mean1, [-1]), cov1[0]
@@ -122,4 +111,3 @@ class GraphGPR():
         lik = dst.log_prob(tf.reshape(ys_test, [-1])).numpy()
 
         return lik
-
